@@ -1,0 +1,65 @@
+/* src/styles/carouselStyles.css */
+
+.carousel-root {
+    height: 100%;
+  }
+  
+  .carousel.carousel-slider {
+    height: 85%;
+  }
+  
+  .carousel .slider-wrapper {
+    height: 100%;
+  }
+
+  .carousel .slider {
+    height: 100%;
+  }
+  
+  .carousel .slider .slide {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .carousel .slider .slide img{
+    max-height: 100%;
+    max-width: 100%;
+  }
+
+  .carousel .thumbs-wrapper{
+    margin-top: 10px;
+  }
+
+  .carousel .thumbs {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .carousel .thumb{
+    height: 70px; /* Ajusta la altura de las miniaturas según tus preferencias */
+    margin-right: 10px; /* Espaciado entre miniaturas */
+  }
+  
+  .carousel .thumb img {
+    width: 100%; /* Para asegurarse de que la imagen ocupe todo el espacio de la miniatura */
+    height: 100%; /* Para asegurarse de que la imagen ocupe todo el espacio de la miniatura */
+    object-fit: cover; /* Para recortar la imagen y que se ajuste al tamaño de la miniatura */
+  }
+
+  .carousel .thumb.selected{
+    border: 1px solid #A29589;
+  }
+
+  .carousel .thumb:hover{
+    border: 3px solid #A29589;
+  }
+  
+  .carousel .control-prev.control-arrow::before{
+    border-right: 8px solid black;
+  }
+
+  .carousel .control-next.control-arrow::before{
+    border-left: 8px solid black;
+  }
