@@ -83,6 +83,8 @@ const House = () => {
     getData();
   }, [ref]);
 
+  //className={`w-24 h-24 xl:w-28 xl:h-28 bg-cover bg-top rounded-full`}style={{backgroundImage: `url(${backendUrl}${agent.photo})`,}}
+
   const backendUrl = 'http://localhost:8000';
   const texto =
     'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorem iure culpa fuga fugiat nemo nisi non, dolor doloribus eaque obcaecati facilis. Nulla nemo, molestias, dignissimos inventore quo id eos culpa eaque suscipit esse voluptates. Nesciunt placeat sint tempora eaque omnis eligendi explicabo amet, eius laudantium dignissimos expedita nulla porro quia architecto ipsa consequatur officiis velit, minus maiores facere, numquam praesentium magni at ea! Voluptatum ipsa dolores, nemo pariatur aperiam quidem repudiandae blanditiis iure commodi deserunt itaque ipsam eos ratione aliquam magni distinctio provident neque, natus corrupti a hic magnam exercitationem. Ipsum possimus temporibus facere voluptates fugiat, nobis commodi debitis. Magni ratione ipsum recusandae quasi doloribus ad veritatis explicabo. Ab dolores sunt ea soluta, magni voluptatum veritatis. Dolore omnis sapiente atque!';
@@ -160,14 +162,15 @@ const House = () => {
               </div>
             </Container>
             <div className="h-full lg:w-1/4 lg:absolute md:top-4 rigth-0 md:right-10 xl:right-24">
-              <div className="lg:sticky lg:top-10 xl:w-full space-y-6 py-10 px-8 border border-own-light bg-white">
+              <div className="lg:sticky lg:top-10 xl:w-full space-y-6 py-6 px-4 xl:py-10 xl:px-8 border border-own-light bg-white">
                 <div className="flex h-full items-center space-x-4">
-                  <div
-                    className={`w-24 h-24 xl:w-28 xl:h-28 bg-cover bg-top rounded-full`}
-                    style={{
-                      backgroundImage: `url(${backendUrl}${agent.photo})`,
-                    }}
-                  ></div>
+                  <div>
+                    <img
+                      src={`${backendUrl}${agent.photo}`}
+                      alt={`${agent.name} Photo`}
+                      className="min-w-24 min-h-24 w-24 h-24 xl:min-w-32 xl:min-h-32 xl:w-32 xl:h-32 rounded-full ring-2 ring-white object-cover object-top"
+                    />
+                  </div>
                   <div>
                     <p className="text-lg xl:text-xl text-own-dark">{`${agent.name} ${agent.lastname}`}</p>
                     <p className="capitalize text-xs xl:text-sm text-own-brown-gray">

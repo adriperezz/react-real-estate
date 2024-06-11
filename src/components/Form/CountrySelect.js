@@ -1,4 +1,3 @@
-import { height } from '@fortawesome/free-brands-svg-icons/fa42Group';
 import React from 'react';
 import Select from 'react-select';
 
@@ -8,7 +7,6 @@ const CountrySelect = ({ onChange, value }) => {
     { value: 'US', label: '+1' },
     { value: 'MX', label: '+52' },
     { value: 'CA', label: '+1' },
-    // Añade más opciones según tus necesidades
   ];
 
   const customStyles = {

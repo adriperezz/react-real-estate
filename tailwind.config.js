@@ -1,9 +1,13 @@
+const { nextui } = require('@nextui-org/theme');
 /** @type {import('tailwindcss').Config} */
 const { height } = require('@fortawesome/free-brands-svg-icons/fa42Group');
 const colors = require('tailwindcss/colors');
 
 module.exports = {
-  content: ['./src/**/*.{html,js}'],
+  content: [
+    './src/**/*.{html,js}',
+    './node_modules/@nextui-org/theme/dist/components/(progress|spinner).js',
+  ],
   theme: {
     extend: {
       height: {
@@ -28,5 +32,4 @@ module.exports = {
       8: '8px',
     },
   },
-  plugins: [require('@tailwindcss/forms')],
 };

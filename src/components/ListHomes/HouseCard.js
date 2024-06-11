@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 
 const HouseCard = ({ house, details }) => {
   const [addressDetails, setAddressDetails] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (details !== null) {
