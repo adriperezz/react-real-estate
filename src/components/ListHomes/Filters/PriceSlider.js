@@ -14,16 +14,18 @@ const PriceSlider = ({ minPrice, maxPrice, theme, onPriceChange }) => {
   };
 
   return (
-    <Slider
-      onChange={handleChange}
-      value={value}
-      valueLabelDisplay="auto"
-      getAriaValueText={valueText}
-      valueLabelFormat={valueText}
-      step={10000}
-      min={minPrice}
-      max={maxPrice}
-    />
+    <div className="w-full">
+      <Slider
+        onChange={handleChange}
+        value={value}
+        valueLabelDisplay="auto"
+        getAriaValueText={valueText}
+        valueLabelFormat={valueText}
+        step={10000}
+        min={minPrice}
+        max={maxPrice}
+      />
+    </div>
   );
 };
 

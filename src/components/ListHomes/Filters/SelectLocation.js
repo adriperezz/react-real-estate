@@ -12,13 +12,18 @@ const SelectLocation = ({ onSelectChange, provinces, theme }) => {
   return (
     <>
       <FormControl fullWidth>
-        <InputLabel variant="standard" htmlFor="uncontrolled-native">
+        <InputLabel
+          variant="standard"
+          htmlFor="uncontrolled-native"
+          className="block text-lg font-light leading-6 text-own-brown-gray"
+        >
           Location
         </InputLabel>
         <NativeSelect
           inputProps={{ name: 'location', id: 'uncontrolled-native' }}
           defaultValue="all"
           onChange={handleChange}
+          className="block text-sm w-full border-0 py-1 px-2 text-neutral-600 shadow-sm ring-1 ring-inset ring-own-light placeholder:text-neutral-400 focus:ring-2 focus:ring-inset focus:ring-own-dark sm:leading-6"
         >
           <option value={'all'}>ALL</option>
           {provinces.map((province, index) => (

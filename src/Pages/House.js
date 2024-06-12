@@ -240,11 +240,8 @@ const House = () => {
                         Features
                       </h2>
                       <div className="flex flex-wrap gap-3 capitalize">
-                        {house.caracteristicas.map((caracteristic) => (
-                          <FeatureBadge
-                            feature={caracteristic}
-                            key={caracteristic.id}
-                          />
+                        {house.caracteristicas.map((caracteristic, id) => (
+                          <FeatureBadge feature={caracteristic} key={id} />
                         ))}
                       </div>
                     </div>

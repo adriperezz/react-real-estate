@@ -2,7 +2,7 @@ import React from 'react';
 
 const ContactForm = ({ house }) => {
   const clase =
-    'block text-xs w-full border-0 py-2 text-neutral-600 shadow-sm ring-1 ring-inset ring-own-light placeholder:text-neutral-400 focus:ring-2 focus:ring-inset focus:ring-own-dark sm:leading-6';
+    'block text-xs w-full border-0 py-2 px-2 text-neutral-600 shadow-sm ring-1 ring-inset ring-own-light placeholder:text-neutral-400 focus:ring-2 focus:ring-inset focus:ring-own-dark sm:leading-6';
   return (
     <>
       <form className="space-y-6" action="#" method="POST">
@@ -37,7 +37,7 @@ const ContactForm = ({ house }) => {
               autoComplete="tel"
               placeholder="Phone Number"
               required
-              className="w-full text-xs border-0 py-2 text-neutral-600 shadow-sm ring-1 ring-inset ring-own-light placeholder:text-neutral-400 focus:ring-2 focus:ring-inset focus:ring-own-dark sm:leading-6"
+              className={clase}
             />
           </div>
           <div className="mt-2">

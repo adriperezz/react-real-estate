@@ -8,6 +8,7 @@ module.exports = {
     './src/**/*.{html,js}',
     './node_modules/@nextui-org/theme/dist/components/(progress|spinner).js',
   ],
+  important: '#root',
   theme: {
     extend: {
       height: {
@@ -17,7 +18,7 @@ module.exports = {
         'own-dark': '#776552',
         'own-medium-dark': '#97795B',
         'own-brown-gray': '#A29589',
-        'own-gray': '#CCCC6',
+        'own-gray': '#CCCCC6',
         'own-light': '#E8E4DE',
       },
     },

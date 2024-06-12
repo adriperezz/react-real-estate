@@ -11,7 +11,11 @@ const SelecType = ({ onChange }) => {
   return (
     <>
       <FormControl fullWidth>
-        <InputLabel variant="standard" htmlFor="grouped-native-select">
+        <InputLabel
+          variant="standard"
+          htmlFor="grouped-native-select"
+          className="block text-lg font-light leading-6 text-own-brown-gray"
+        >
           Property Type
         </InputLabel>
         <NativeSelect
@@ -19,6 +23,7 @@ const SelecType = ({ onChange }) => {
           id="grouped-native-select"
           label="Property Type"
           onChange={handleChange}
+          className="block text-sm w-full border-0 py-1 px-2 text-neutral-600 shadow-sm ring-1 ring-inset ring-own-light placeholder:text-neutral-400 focus:ring-2 focus:ring-inset focus:ring-own-dark sm:leading-6"
         >
           <option value={'all'}>ALL</option>
           <optgroup label="Pisos">

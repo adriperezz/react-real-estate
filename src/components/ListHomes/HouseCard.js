@@ -33,7 +33,7 @@ const HouseCard = ({ house, details }) => {
 
   return (
     <Link to={`/house/${house.reference}`}>
-      <div className="bg-white border h-full border-stone-300 shadow-md text-own-dark overflow-hidden flex flex-col">
+      <div className="bg-white border border-stone-300 shadow-md text-own-dark overflow-hidden flex flex-col">
         <div
           className={`h-60 bg-cover bg-center`}
           style={{ backgroundImage: `url(${mainPhotoUrl})` }}
