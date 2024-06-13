@@ -8,13 +8,13 @@ const Header = () => {
   return (
     <header className="bg-own-light">
       <nav className="mx-auto max-w-7xl p-3 lg:px-8">
-        <div className="flex justify-between items-center">
-          <div>
+        <div className="flex justify-between items-center gap-10 px-8">
+          <div className="">
             <Link to="/">
               <img
                 src="/real_logo.svg"
                 alt="Maklarhuset Coffee Color Logo"
-                className="h-24"
+                className="h-24 w-24 min-w-14 min-h-14"
               ></img>
             </Link>
           </div>
@@ -27,8 +27,8 @@ const Header = () => {
                 );
               })}
           </div>
-          <div className="flex justify-between items-center space-x-4">
-            <Link to="#">
+          <div className="flex flex-none justify-between items-center space-x-4">
+            <Link to="/liked-houses">
               <img
                 src="/heart-icon.svg"
                 alt="Liked Houses Logo"

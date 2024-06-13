@@ -29,13 +29,11 @@ const HouseCard = ({ house, details }) => {
   const backendUrl = 'http://localhost:8000';
   const mainPhotoUrl = `${backendUrl}/static/uploads/realEstate/housesPhotos/${house.reference}/0_mainPhoto.jpg`;
 
-  //https://cdn.maklarhuset.se/employee/images/large/0ad8df08-c67d-4452-819a-28c03fb732d4.jpg
-
   return (
     <Link to={`/house/${house.reference}`}>
-      <div className="bg-white border border-stone-300 shadow-md text-own-dark overflow-hidden flex flex-col">
+      <div className="bg-white border border-stone-300 shadow-md text-own-dark overflow-hidden flex flex-col h-full">
         <div
-          className={`h-60 bg-cover bg-center`}
+          className={`min-h-60 h-60 bg-cover bg-center`}
           style={{ backgroundImage: `url(${mainPhotoUrl})` }}
         ></div>
 

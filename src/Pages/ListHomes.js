@@ -9,6 +9,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import SelecType from '../components/ListHomes/Filters/SelecType';
 import AreaRange from '../components/ListHomes/Filters/AreaRange';
 import HabRange from '../components/ListHomes/Filters/HabRange';
+import Search from '../components/ListHomes/Filters/Search';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFilter } from '@fortawesome/free-solid-svg-icons';
 
 const ListHomes = ({ type }) => {
   const [houses, setHouses] = useState([]);
@@ -23,6 +26,7 @@ const ListHomes = ({ type }) => {
   const [habRange, setHabRange] = useState(['', '']);
   const [bathRange, setBathRange] = useState(['', '']);
   const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
+  const [searchValue, setSearchValue] = useState('');
 
   //Slider theme customization
   const theme = createTheme({
@@ -86,38 +90,58 @@ const ListHomes = ({ type }) => {
 
   const handlePriceChange = (newPriceRange) => {
     setPriceRange(newPriceRange);
+    handlePopupClosed();
   };
 
   const handleSelectedLocationChange = (value) => {
     setSelectedLocation(value);
+    handlePopupClosed();
   };
 
   const handleTypeChange = (value) => {
     setHouseType(value);
+    handlePopupClosed();
   };
 
   const handleAreaSubmit = (areaValues) => {
     setAreaRange(areaValues);
+    handlePopupClosed();
   };
 
   const handleHabRangeSubmit = (habValues) => {
     setHabRange(habValues);
+    handlePopupClosed();
   };
 
   const handleBathRangeSubmit = (bathValues) => {
     setBathRange(bathValues);
+    handlePopupClosed();
   };
 
-  const getProvinceByHouseId = (addressId) => {
-    const address = addressDetails.find((add) => add.id === addressId);
-    return address ? address.province : '';
+  const handlePopupOpened = () => {
+    setIsFilterPopupOpen(true);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const handlePopupClosed = () => {
+    setIsFilterPopupOpen(false);
+    document.body.style.overflow = 'visible';
+  };
+
+  const handleSearchSubmit = (searchValue) => {
+    setSearchValue(searchValue);
+  };
+
+  const getHouseAddress = (house) => {
+    const address = addressDetails.find((add) => add.id === house.address);
+    return address ? address : null;
   };
 
   const filteredProvinces = [
     ...new Set(
       houses
         .filter((house) => house.typeBusiness === type)
-        .map((house) => getProvinceByHouseId(house.address))
+        .map((house) => getHouseAddress(house)?.province)
     ),
   ];
 
@@ -131,10 +155,22 @@ const ListHomes = ({ type }) => {
         (house) => house.price >= priceRange[0] && house.price <= priceRange[1]
       )
       .filter((house) => {
-        const province = getProvinceByHouseId(house.address);
-        return selectedLocation === 'all' || province === selectedLocation;
+        if (selectedLocation === '' || selectedLocation === 'all') {
+          return true; // Si la ubicación seleccionada es vacía o 'all', retorna true para incluir la casa
+        } else {
+          // Obtener la provincia a partir de la dirección de la casa
+          const province = getHouseAddress(house)?.province;
+
+          // Compara la provincia obtenida con la ubicación seleccionada
+          return province === selectedLocation;
+        }
       })
-      .filter((house) => house.typeHouse === houseType || houseType === 'all')
+      .filter(
+        (house) =>
+          house.typeHouse === houseType ||
+          houseType === 'all' ||
+          houseType === ''
+      )
       .filter(
         (house) =>
           (house.metrosConstruidos >= areaRange[0] &&
@@ -152,20 +188,112 @@ const ListHomes = ({ type }) => {
           (house.numBathrooms >= bathRange[0] &&
             house.numBathrooms <= bathRange[1]) ||
           (bathRange[0] === '' && bathRange[1] === '')
-      );
+      )
+      .filter((house) => {
+        const lowerSearch = searchValue.toLowerCase().trim();
+        const houseReferenceLower = house.reference.toLowerCase();
+        const houseNameLower = house.name.toLowerCase();
+        const address = getHouseAddress(house);
+        const addressStreetLower = address?.street.toLowerCase() || '';
+        const addressLocalidadLower = address?.localidad.toLowerCase() || '';
+        const addressProvinceLower = address?.province.toLowerCase() || '';
+        const addressZipCodeLower = '' + address?.zipCode || '';
+
+        return (
+          houseReferenceLower.includes(lowerSearch) ||
+          houseNameLower.includes(lowerSearch) ||
+          addressStreetLower.includes(lowerSearch) ||
+          addressProvinceLower.includes(lowerSearch) ||
+          addressZipCodeLower.includes(lowerSearch) ||
+          addressLocalidadLower.includes(lowerSearch)
+        );
+      });
 
     return (
       <>
+        {isFilterPopupOpen && (
+          <ThemeProvider theme={theme}>
+            <div className="fixed top-0 left-0 right-0 h-screen w-full content-center justify-center lg:hidden border border-neutral-300 bg-white p-4 space-y-4 px-8 py-10 lg:sticky lg:top-10">
+              <div className="absolute top-10 right-10">
+                <button
+                  type="button"
+                  onClick={handlePopupClosed}
+                  class="bg-white p-2 inline-flex items-center justify-center text-own-brown-gray hover:text-own-brown-gray hover:bg-own-light focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
+                >
+                  <span class="sr-only">Close menu</span>
+
+                  <svg
+                    class="h-6 w-6"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+              <div className="pb-2">
+                <SelecType onChange={handleTypeChange} />
+              </div>
+              <div className="pb-2">
+                <SelectedLocation
+                  onSelectChange={handleSelectedLocationChange}
+                  provinces={filteredProvinces}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-light leading-6 text-own-brown-gray">
+                  Price
+                </label>
+                <PriceSlider
+                  minPrice={minPrice}
+                  maxPrice={maxPrice}
+                  onPriceChange={handlePriceChange}
+                />
+              </div>
+              <div>
+                <AreaRange onSubmit={handleAreaSubmit} />
+              </div>
+              <div>
+                <HabRange
+                  onSubmit={handleHabRangeSubmit}
+                  min={'min'}
+                  max={'max'}
+                  title={'Bedrooms'}
+                />
+              </div>
+              <div>
+                <HabRange
+                  onSubmit={handleBathRangeSubmit}
+                  min={'min'}
+                  max={'max'}
+                  title={'Bathrooms'}
+                />
+              </div>
+            </div>
+          </ThemeProvider>
+        )}
+
         <Container bgColor={'bg-own-light'}>
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 w-full h-full">
             {/* Parte A: Filtros */}
-            <div className="col-span-1 space-y-4">
+            <div className="col-span-1 space-y-4 w-full h-full">
               <ThemeProvider theme={theme}>
-                <div className="border border-neutral-300 bg-white p-4 space-y-4 px-8 py-10">
-                  <div>
+                <div className="hidden lg:block border border-neutral-300 bg-white p-4 space-y-4 px-8 py-14 lg:sticky lg:top-10">
+                  <div className="pb-2">
+                    <Search onSubmit={handleSearchSubmit} hidden={'hidden'} />
+                  </div>
+                  <div className="pb-2">
                     <SelecType onChange={handleTypeChange} />
                   </div>
-                  <div>
+                  <div className="pb-2">
                     <SelectedLocation
                       onSelectChange={handleSelectedLocationChange}
                       provinces={filteredProvinces}
@@ -205,17 +333,24 @@ const ListHomes = ({ type }) => {
               </ThemeProvider>
             </div>
 
-            <div className="lg:hidden col-span-1">
-              <button
-                onClick={() => setIsFilterPopupOpen(true)}
-                className="w-full bg-own-dark py-2 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-own-brown-gray focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-own-dark"
-              >
-                Open Filters
-              </button>
+            <div className="lg:hidden col-span-1 h-full">
+              <div className="flex w-full justify-between items-end h-full">
+                <div className="w-3/4 h-full">
+                  <Search onSubmit={handleSearchSubmit} />
+                </div>
+                <div className="h-full w-1/4 flex items-end">
+                  <button
+                    onClick={handlePopupOpened}
+                    className="w-full h-1/2 flex justify-center items-center max-h-1/2 min-h-1/2 bg-own-dark text-sm font-semibold leading-6 text-white shadow-sm hover:bg-own-brown-gray focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-own-dark"
+                  >
+                    <FontAwesomeIcon icon={faFilter} />
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Parte B: Lista de casas */}
-            <div className="col-span-1 lg:col-span-3 xl:col-span-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 w-full">
+            <div className="col-span-1 lg:col-span-3 xl:col-span-3 grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5 w-full h-fit">
               {filteredHouses.map((house) => (
                 <HouseCard
                   house={house}
@@ -232,58 +367,3 @@ const ListHomes = ({ type }) => {
 };
 
 export default ListHomes;
-
-/*<Container bgColor={'bg-own-light'}>
-  <div className="relative w-full">
-    <div className="flex justify-between w-full mx-auto items-center border border-own-brown-gray divide-x divide-own-brown-gray mb-8 bg-white sticky top-0">
-      <ThemeProvider theme={theme}>
-        <div className="flex flex-col w-3/12 justify-center">
-          <div className="flex justify-between items-center">
-            <div className="pb-4 px-8 w-1/2">
-              <SelecType onChange={handleTypeChange} />
-            </div>
-            <div className="pb-4 px-8 w-1/2">
-              <SelectedLocation
-                onSelectChange={handleSelectedLocationChange}
-                provinces={filteredProvinces}
-                theme={theme}
-              />
-            </div>
-          </div>
-          <div className="pt-2 px-8 border-t border-own-brown-gray ">
-            <label className="block text-sm font-light leading-6 text-own-brown-gray">
-              Price
-            </label>
-            <PriceSlider
-              minPrice={minPrice}
-              maxPrice={maxPrice}
-              onPriceChange={handlePriceChange}
-            />
-          </div>
-        </div>
-      </ThemeProvider>
-      <div className="py-6 px-8 w-3/12">
-        <AreaRange onSubmit={handleAreaSubmit} />
-      </div>
-      <div className="py-6 px-8 w-3/12">
-        <HabRange
-          onSubmit={handleHabRangeSubmit}
-          decoration={'bedroom/s'}
-          title={'Bedrooms'}
-        />
-      </div>
-      <div className="py-6 px-8 w-3/12">
-        <HabRange
-          onSubmit={handleBathRangeSubmit}
-          decoration={'bathroom/s'}
-          title={'Bathrooms'}
-        />
-      </div>
-    </div>
-  </div>
-  <div className="grid lg:grid-cols-3 gap-5">
-    {filteredHouses.map((house) => (
-      <HouseCard house={house} key={house.id} details={addressDetails} />
-    ))}
-  </div>
-</Container>;*/

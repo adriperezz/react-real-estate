@@ -9,7 +9,7 @@ import GridFeatures from '../components/House/GridFeatures';
 import FeatureBadge from '../components/House/FeatureBadge';
 import Moment from 'react-moment';
 import CarouselPhotos from '../components/House/CarouselPhotos';
-import TextWithToggle from '../components/TextWithToggle';
+import TextWithToggle from '../components/House/TextWithToggle';
 
 const House = () => {
   const { ref } = useParams();
@@ -19,6 +19,8 @@ const House = () => {
   const [photos, setPhotos] = useState([]);
   const [price, setPrice] = useState(null);
   const [agent, setAgent] = useState(null);
+  const [reaction, setReaction] = useState(null);
+  const [likedHomes, setLikedHomes] = useState([]);
 
   let style = {
     style: 'currency',
@@ -27,63 +29,106 @@ const House = () => {
     useGrouping: true,
   };
 
-  useEffect(() => {
-    const getData = async () => {
-      try {
-        console.log('Fetching house details');
-        const [apiHouse, apiAddressDetails] = await Promise.all([
-          fetch(`http://localhost:8000/api/houses/detail/${ref}`),
-          fetch('http://127.0.0.1:8000/api/house-address/list/'),
-        ]);
+  const getLocalHouse = (dataHouse) => {
+    const localHomes = JSON.parse(localStorage.getItem('likedHomes')) || [];
+    setLikedHomes(localHomes);
+    if (localHomes.some((likedHome) => likedHome.id === dataHouse.id)) {
+      setReaction('like');
+    }
+  };
 
-        if (!apiHouse.ok) {
-          throw new Error('Failed to fetch houses');
+  useEffect(
+    () => {
+      const getData = async () => {
+        try {
+          const [apiHouse, apiAddressDetails] = await Promise.all([
+            fetch(`http://localhost:8000/api/houses/detail/${ref}`),
+            fetch('http://127.0.0.1:8000/api/house-address/list/'),
+          ]);
+
+          if (!apiHouse.ok) {
+            throw new Error('Failed to fetch houses');
+          }
+          if (!apiAddressDetails.ok) {
+            throw new Error('Failed to fetch address details');
+          }
+
+          const dataHouse = await apiHouse.json();
+          const dataAddressDetails = await apiAddressDetails.json();
+
+          setHouse(dataHouse);
+
+          const address = dataAddressDetails.find(
+            (addr) => addr.id === dataHouse.address
+          );
+          setAddressDetails(address);
+
+          const [apiPhotos, apiAgent] = await Promise.all([
+            fetch(
+              `http://localhost:8000/api/image-houses/house/${dataHouse.id}`
+            ),
+            fetch(`http://localhost:8000/api/agents/detail/${dataHouse.agent}`),
+          ]);
+
+          if (!apiPhotos.ok) {
+            throw new Error('Failed to fetch photos');
+          }
+          if (!apiAgent.ok) {
+            throw new Error('Failed to fetch agent');
+          }
+
+          const dataPhotos = await apiPhotos.json();
+          const dataAgent = await apiAgent.json();
+          setPhotos(dataPhotos);
+          setAgent(dataAgent);
+
+          getLocalHouse(dataHouse);
+
+          var formatter = new Intl.NumberFormat('de-DE', style);
+          setPrice(formatter.format(dataHouse.price));
+        } catch (e) {
+          console.log(e);
+        } finally {
+          setLoading(false);
         }
-        if (!apiAddressDetails.ok) {
-          throw new Error('Failed to fetch address details');
-        }
+      };
 
-        const dataHouse = await apiHouse.json();
-        const dataAddressDetails = await apiAddressDetails.json();
+      getData();
+    },
+    [ref],
+    []
+  );
 
-        setHouse(dataHouse);
+  const saveDataLocalStorage = (house) => {
+    //Verificar si el home ya esta en liked home
+    if (!likedHomes.some((likedHome) => likedHome.id === house.id)) {
+      // Agregar el home a likedHomes
+      const updatedLikedHomes = [...likedHomes, house];
+      setLikedHomes(updatedLikedHomes);
 
-        const address = dataAddressDetails.find(
-          (addr) => addr.id === dataHouse.address
-        );
-        setAddressDetails(address);
+      // Actualizar localStorage
+      localStorage.setItem('likedHomes', JSON.stringify(updatedLikedHomes));
+    }
+  };
 
-        console.log('Fetching photos and agent details');
-        const [apiPhotos, apiAgent] = await Promise.all([
-          fetch(`http://localhost:8000/api/image-houses/house/${dataHouse.id}`),
-          fetch(`http://localhost:8000/api/agents/detail/${dataHouse.agent}`),
-        ]);
+  const removeDataLocalStorage = (houseId) => {
+    const localHomes = JSON.parse(localStorage.getItem('likedHomes')) || [];
+    const updatedLikedHomes = localHomes.filter(
+      (likedHome) => likedHome.id !== houseId
+    );
+    localStorage.setItem('likedHomes', JSON.stringify(updatedLikedHomes));
+    setLikedHomes(updatedLikedHomes);
+  };
 
-        if (!apiPhotos.ok) {
-          throw new Error('Failed to fetch photos');
-        }
-        if (!apiAgent.ok) {
-          throw new Error('Failed to fetch agent');
-        }
-
-        const dataPhotos = await apiPhotos.json();
-        const dataAgent = await apiAgent.json();
-        setPhotos(dataPhotos);
-        setAgent(dataAgent);
-
-        var formatter = new Intl.NumberFormat('de-DE', style);
-        setPrice(formatter.format(dataHouse.price));
-      } catch (e) {
-        console.log(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    getData();
-  }, [ref]);
-
-  //className={`w-24 h-24 xl:w-28 xl:h-28 bg-cover bg-top rounded-full`}style={{backgroundImage: `url(${backendUrl}${agent.photo})`,}}
+  const handleReaction = () => {
+    if (reaction === null) {
+      setReaction('like');
+      saveDataLocalStorage(house);
+    } else if (reaction === 'like') {
+      setReaction(null);
+      removeDataLocalStorage(house.id);
+    }
+  };
 
   const backendUrl = 'http://localhost:8000';
   const texto =
@@ -100,7 +145,31 @@ const House = () => {
               <div className="lg:w-3/5">
                 <div>
                   <div className="space-y-4 border-b pb-6 border-own-light">
-                    <h2 className="text-xl text-own-dark font-mono">{`${house.name} - ${addressDetails.localidad}, ${addressDetails.province}, ${addressDetails.country}`}</h2>
+                    <div className="flex justify-between">
+                      <h2 className="text-xl text-own-dark font-mono">{`${house.name} - ${addressDetails.localidad}, ${addressDetails.province}, ${addressDetails.country}`}</h2>
+                      <button className="relative" onClick={handleReaction}>
+                        {reaction === 'like' ? (
+                          <img
+                            src="/heart-icon-fill.svg"
+                            alt="Liked Houses Logo"
+                            className="h-5 w-auto"
+                          />
+                        ) : (
+                          <img
+                            src="/heart-icon.svg"
+                            alt="Liked Houses Logo"
+                            className="h-5 w-auto"
+                          />
+                        )}
+                        <div className="absolute inset-0 flex items-center justify-center opacity-0 hover:opacity-100">
+                          <img
+                            src="/heart-icon-fill.svg"
+                            alt="Liked Houses Logo"
+                            className="h-5 w-auto"
+                          />
+                        </div>
+                      </button>
+                    </div>
                     <div className="grid grid-cols-2 sm:grid-cols-4 text-own-dark gap-4">
                       <div>
                         <p className="font-light text-sm text-own-brown-gray">
@@ -193,7 +262,7 @@ const House = () => {
               <div className="lg:w-3/4 p-8">
                 <div className="lg:w-3/4">
                   <div>
-                    <div className="space-y-3 border-b border-neutral-300 pb-8">
+                    <div className="space-y-3 border-b  pb-8">
                       <h2 className="text-sm font-mono text-neutral-500">
                         Property Type
                       </h2>

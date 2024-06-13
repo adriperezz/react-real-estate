@@ -17,16 +17,16 @@ export const menuData = [
   {
     title: 'about us',
     link: '/about-us',
-    seen: true,
+    seen: false,
   },
   {
     title: 'contact',
     link: '/contact',
-    seen: true,
+    seen: false,
   },
   {
-    title: 'wish list',
-    link: '/wish-list',
+    title: 'liked houses',
+    link: '/liked-houses',
     seen: false,
   },
   {
