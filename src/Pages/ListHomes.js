@@ -27,6 +27,8 @@ const ListHomes = ({ type }) => {
   const [bathRange, setBathRange] = useState(['', '']);
   const [isFilterPopupOpen, setIsFilterPopupOpen] = useState(false);
   const [searchValue, setSearchValue] = useState('');
+  const [loadingMore, setLoadingMore] = useState(false); // Estado para verificar si se está cargando más contenido
+  const [loadIncrement, setLoadIncrement] = useState(20); // Incremento de carga
 
   //Slider theme customization
   const theme = createTheme({
